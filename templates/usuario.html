@@ -1,0 +1,28 @@
+{% include "cabezera.html" %}
+    <div class="container-fluid position-absoulte">
+    <div class="container align-self-center" style="margin-top:100px">
+      <form method="POST" action="{{ url_for('usuario') }}">
+                      {{ form.csrf_token }}
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto" style="bottom:0">
+
+              <div class="row">
+                <div class="column">  </div>
+                <div class="col-lg-8 col-md-10 mx-auto" style="bottom:0">
+                  <ul class="list-group list-group-flush">
+                  <li class="list-group-item ">Usuario{{form.username(style="width:300px", value=user_data["user"])}} <span style="color:red">{% if error1 %}{{error1}}{% endif %}</span></li>
+                  <li class="list-group-item ">Grupo {{form.group(style="width:300px", value=user_data["group"])}}</li>
+                   <li class="list-group-item ">Correo Electronico {{form.email(style="width:300px", value=user_data["email"])}}<span style="color:red">{% if error2 %}{{error2}}{% endif %}</span></li>
+                  <li class="list-group-item ">Vieja contraseña {{form.old_password(style="width:300px")}}</li>
+                   <li class="list-group-item">Nueva contraseña{{form.new_password(style="width:300px")}}</li>
+                 <li class="list-group-item "><input type="submit" value="Guardar Cambios" class="btn btn-dark"></li>
+                 </ul>
+                    <div class="column">  </div>
+                </div>
+              </div>
+            </div>
+            </div>
+            </form>
+        </div>
+      </div>
+{% include "footer.html" %}
