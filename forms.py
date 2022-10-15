@@ -1,9 +1,9 @@
 import datetime
-
+from datetime import date, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, IntegerField, DateField, SelectField, BooleanField
 from wtforms.validators import DataRequired, NumberRange, NoneOf, Email, ValidationError, Length
-from datetime import date, timedelta
+
 from config import Data
 
 data = Data()
@@ -24,7 +24,7 @@ class RegisterForm(FlaskForm):
         validators=[DataRequired(message="required field"), NoneOf(data.invalid_characters, message="invalid symbol used")])
     group = StringField(validators=[DataRequired(message="required field"),
                                     NoneOf(data.invalid_characters, message="invalid symbol used")])
-    email = StringField(validators=[Email(), DataRequired(message="required field"),
+    email = StringField(validators=[DataRequired(message="required field"),
                                     NoneOf(data.invalid_characters, message="invalid symbol used")])
     password = PasswordField(validators=[DataRequired(), NoneOf(data.invalid_characters, message="invalid symbol used"),
                                          Length(min = 8, max= 50, message= "password must be 8 to 50 characters long")])
