@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 class Data(object):
     bread_types = ["White", "Seeds", "Walnut", "Walnut and Sultanas", "Onion", "Potato", "Olive", "Wholemeal Rye",
                    "Wholemeal Spelt", "Wholemeal White", "Wholemeal Seeds", "Wholemeal Walnut",
@@ -56,6 +60,6 @@ class Data(object):
               "Wholemeal_Walnut_stick": 2.5,
               "Wholemeal_Walnut_and_Sultanas_stick": 2.5}
 class SecretData(object):
-    secret_key = '8BYkEfBAs6sfOfdonfszWlSisfsBXoxfdfs7C0sKR6b'
+    secret_key = os.getenv('SECRET_KEY_FlASK')
 
 
