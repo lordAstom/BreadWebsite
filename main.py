@@ -19,17 +19,35 @@ data = Data()
 secret_data = SecretData()
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = secret_data.secret_key
+
 ckeditor = CKEditor(app)
-Bootstrap(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
+
+
 # Flask-SQLAlchemy settings
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///breadshop.db'  # File-based SQL database
-SQLALCHEMY_TRACK_MODIFICATIONS = False  # Avoids SQLAlchemy warning
-db = SQLAlchemy(app)
+# Avoids SQLAlchemy warning
 
 
+
+def create_app():
+    global app
+    global db
+    global login_manager
+    app = Flask(__name__)
+    Bootstrap(app)
+    app.config['SECRET_KEY'] = secret_data.secret_key
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///breadshop.db'  # File-based SQL database
+    db = SQLAlchemy(app)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    with app.app_context():
+        db.create_all()
+
+    return app
+
+create_app()
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -52,10 +70,6 @@ class Order(db.Model):
     customer = relationship("User", back_populates="orders")
     client = db.Column(db.String(255), nullable=False)
 
-
-db.create_all()
-
-
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -69,6 +83,7 @@ def admin_required(f):
 
 loggin_logger = Log("login ssuccseful", "login_info.log")
 order_logger = Log("order ssuccseful", "order_info.log")
+
 
 
 @login_manager.user_loader
@@ -105,7 +120,7 @@ def indexEng():
         order_logger.info(f"{error2}")
         if not verifier.verify_int(order_form.recurring.data, 0, 7):
             valid_order = False
-        if sum(order.values())==0:
+        if sum(order.values()) == 0:
             valid_order = False
         if valid_order:
             # end of secondary validation
@@ -121,6 +136,7 @@ def indexEng():
 
     return render_template("indexEng.html", bread_types=data.bread_types,
                            order_form=order_form, error1=error1, error2=error2)
+
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -142,13 +158,16 @@ def register():
                     form.password.data) and verifier.verify_string(form.group.data) and verifier.verify_string(
                 form.email.data):
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
-                                    method="pbkdf2:sha256", salt_length=14), group=form.group.data, email=form.email.data)
+                                                                                             method="pbkdf2:sha256",
+                                                                                             salt_length=14),
+                                group=form.group.data, email=form.email.data)
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)
                 loggin_logger.info(f"user {form.username.data} from group {form.group.data} registered correctly")
                 return redirect(url_for("indexEng"))
     return render_template("register.html", form=form, error1=error1, error2=error2)
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -177,8 +196,10 @@ def logout():
 @login_required
 def orders():
     user_id = current_user.id
-    undelivered_orders = OrderViewer(db.session.query(Order).filter(and_(Order.user_id == user_id, Order.date > (datetime.date.today()-datetime.timedelta(days=1)))).all(), "en")
-    delivered_orders = OrderViewer(db.session.query(Order).filter(and_(Order.user_id == user_id, Order.date < (datetime.date.today()-datetime.timedelta(days=1)))).all(), "en")
+    undelivered_orders = OrderViewer(db.session.query(Order).filter(
+        and_(Order.user_id == user_id, Order.date > (datetime.date.today() - datetime.timedelta(days=1)))).all(), "en")
+    delivered_orders = OrderViewer(db.session.query(Order).filter(
+        and_(Order.user_id == user_id, Order.date < (datetime.date.today() - datetime.timedelta(days=1)))).all(), "en")
     form = DeleteForm()
     undelivered_orders.add_form(form)
     form.validate_on_submit()
@@ -188,7 +209,8 @@ def orders():
                 db.session.delete(undelivered_orders.order_instance)
         db.session.commit()
         return redirect(url_for("orders"))
-    return render_template("orders.html", form=form, delivered_orders=delivered_orders, undelivered_orders=undelivered_orders)
+    return render_template("orders.html", form=form, delivered_orders=delivered_orders,
+                           undelivered_orders=undelivered_orders)
 
 
 @app.route('/account', methods=['POST', 'GET'])
@@ -217,9 +239,11 @@ def account():
                 user.email = form.email.data
                 user.group = form.group.data
                 if form.new_password.data:
-                    user.password = generate_password_hash(str(form.new_password.data), method="pbkdf2:sha256", salt_length=14)
+                    user.password = generate_password_hash(str(form.new_password.data), method="pbkdf2:sha256",
+                                                           salt_length=14)
                 db.session.commit()
     return render_template("user.html", form=form, error1=error1, error2=error2, user_data=user_data)
+
 
 @app.route('/baker')
 @admin_required
@@ -231,7 +255,8 @@ def baker():
     today_orders = OrderViewer(db.session.query(Order).filter(
         Order.date == (datetime.date.today())).all(), "en")
 
-    return render_template("admin.html",undelivered_orders=undelivered_orders,delivered_orders=delivered_orders,today_orders=today_orders)
+    return render_template("admin.html", undelivered_orders=undelivered_orders, delivered_orders=delivered_orders,
+                           today_orders=today_orders)
 
 
 # Spanish version
@@ -259,7 +284,7 @@ def indexEs():
         order_logger.info(f"{error2}")
         if not verifier.verify_int(order_form.recurring.data, 0, 7):
             valid_order = False
-        if sum(order.values())==0:
+        if sum(order.values()) == 0:
             valid_order = False
         if valid_order:
             # end of secondary validation
@@ -275,6 +300,7 @@ def indexEs():
 
     return render_template("indexEs.html", bread_types=data.bread_types,
                            order_form=order_form, error1=error1, error2=error2)
+
 
 @app.route('/registro', methods=['POST', 'GET'])
 def registro():
@@ -296,13 +322,16 @@ def registro():
                     form.password.data) and verifier.verify_string(form.group.data) and verifier.verify_string(
                 form.email.data):
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
-                                    method="pbkdf2:sha256", salt_length=14), group=form.group.data, email=form.email.data)
+                                                                                             method="pbkdf2:sha256",
+                                                                                             salt_length=14),
+                                group=form.group.data, email=form.email.data)
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)
                 loggin_logger.info(f"user {form.username.data} from group {form.group.data} registered correctly")
                 return redirect(url_for("indexEs"))
     return render_template("registro.html", form=form, error1=error1, error2=error2)
+
 
 @app.route('/acceso', methods=['POST', 'GET'])
 def acceso():
@@ -324,8 +353,10 @@ def acceso():
 @login_required
 def pedidos():
     user_id = current_user.id
-    undelivered_orders = OrderViewer(db.session.query(Order).filter(and_(Order.user_id == user_id, Order.date > (datetime.date.today()-datetime.timedelta(days=1)))).all(), "es")
-    delivered_orders = OrderViewer(db.session.query(Order).filter(and_(Order.user_id == user_id, Order.date < (datetime.date.today()-datetime.timedelta(days=1)))).all(), "es")
+    undelivered_orders = OrderViewer(db.session.query(Order).filter(
+        and_(Order.user_id == user_id, Order.date > (datetime.date.today() - datetime.timedelta(days=1)))).all(), "es")
+    delivered_orders = OrderViewer(db.session.query(Order).filter(
+        and_(Order.user_id == user_id, Order.date < (datetime.date.today() - datetime.timedelta(days=1)))).all(), "es")
     form = DeleteForm()
     undelivered_orders.add_form(form)
     form.validate_on_submit()
@@ -335,7 +366,8 @@ def pedidos():
                 db.session.delete(undelivered_orders.order_instance)
         db.session.commit()
         return redirect(url_for("pedidos"))
-    return render_template("pedidos.html", form=form, delivered_orders=delivered_orders, undelivered_orders=undelivered_orders)
+    return render_template("pedidos.html", form=form, delivered_orders=delivered_orders,
+                           undelivered_orders=undelivered_orders)
 
 
 @app.route('/usuario', methods=['POST', 'GET'])
@@ -364,10 +396,12 @@ def usuario():
                 user.email = form.email.data
                 user.group = form.group.data
                 if form.new_password.data:
-                    user.password = generate_password_hash(str(form.new_password.data), method="pbkdf2:sha256", salt_length=14)
+                    user.password = generate_password_hash(str(form.new_password.data), method="pbkdf2:sha256",
+                                                           salt_length=14)
                 db.session.commit()
     return render_template("usuario.html", form=form, error1=error1, error2=error2, user_data=user_data)
 
+
 # Run Stuff
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
+    app.run(host='0.0.0.0', port=5000)
