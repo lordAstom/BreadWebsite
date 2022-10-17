@@ -2,7 +2,7 @@ import datetime
 from datetime import date, timedelta
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, IntegerField, DateField, SelectField, BooleanField
-from wtforms.validators import DataRequired, NumberRange, NoneOf, Email, ValidationError, Length
+from wtforms.validators import DataRequired, NumberRange, NoneOf ValidationError, Length
 
 from config import Data
 
@@ -57,7 +57,7 @@ class ModifyUser(FlaskForm):
     new_password = PasswordField(validators=[NoneOf(data.invalid_characters, message="invalid symbol used")])
     group = StringField(validators=[DataRequired(message="required field"),
                                     NoneOf(data.invalid_characters, message="invalid symbol used")])
-    email = StringField(validators=[Email(), DataRequired(message="required field"),
+    email = StringField(validators=[DataRequired(message="required field"),
                                     NoneOf(data.invalid_characters, message="invalid symbol used")])
 
 class ModifyUserSumbmit(FlaskForm):
