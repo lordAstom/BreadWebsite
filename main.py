@@ -22,10 +22,8 @@ app = Flask(__name__)
 
 ckeditor = CKEditor(app)
 
-
 # Flask-SQLAlchemy settings
 # Avoids SQLAlchemy warning
-
 
 
 def create_app():
