@@ -39,10 +39,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///breadshop.db'  # File-based SQL database
     db = SQLAlchemy(app)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-
-    with app.app_context():
-        db.create_all()
-
     return app
 
 create_app()
