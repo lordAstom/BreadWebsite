@@ -15,6 +15,7 @@ from extra import *
 from config import Data, SecretData
 import datetime
 
+MAX_BREADS = 15
 data = Data()
 secret_data = SecretData()
 
@@ -42,6 +43,12 @@ def create_app():
     return app
 
 create_app()
+
+def find_num_breads(date,time):
+        stmt = """SELECT SUM(num_breads) FROM "orders" WHERE time_day = '"""+time+"""' AND date = '"""+str(date)+"""'"""
+        b = db.session.execute(stmt)
+        return b.first()[0]
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -63,6 +70,7 @@ class Order(db.Model):
     time_day = db.Column(db.String(255), nullable=False)
     customer = relationship("User", back_populates="orders")
     client = db.Column(db.String(255), nullable=False)
+    num_breads = db.Column(db.Integer)
 
 def admin_required(f):
     @wraps(f)
@@ -78,7 +86,78 @@ def admin_required(f):
 loggin_logger = Log("login ssuccseful", "login_info.log")
 order_logger = Log("order ssuccseful", "order_info.log")
 
-
+def index(lang):
+    if lang == "es":
+        order_form = PedidoPan()
+    elif lang == "en":
+        order_form = BreadOrderForm()        
+    order_form.validate_on_submit()
+    error1,error2,error3 = None, None, None
+    if order_form.validate_on_submit():
+        error1 = valid_day(order_form.date.data, lang)
+        error2 = valid_period(order_form.date.data, order_form.day_time.data, lang)
+        order_logger.info(f"{order_form.day_time.data}")
+        verifier = ReVerify(order_logger)
+        order = {}
+        # start of secondary vailidation
+        valid_order = True
+        if (error1 and error2):
+            valid_order = False
+        order_logger.info(f"{order_form.White_loaf.data}")
+        for bread in data.prices.keys():
+            if verifier.verify_int(eval(f'order_form.{bread}.data'), 0, 6):
+                order[bread] = eval(f'order_form.{bread}.data')
+        order_logger.info(f"{error2}")
+        if not verifier.verify_int(order_form.recurring.data, 0, 7):
+            valid_order = False
+        num_loafs = sum(list(order.values())[:len(order.values())-1])+sum(list(order.values())[len(order.values())-1:])/2
+        if sum(order.values()) == 0:
+            valid_order = False
+        elif num_loafs > 15:
+            if lang == "es":
+                error3 = f"No se puede pedir mas de {MAX_BREADS} panes"
+            elif lang == "en":
+                error3 = f"You may not order more than {MAX_BREADS} breads"
+            valid_order = False
+        if valid_order:
+            order_logger.info(f"{list(order.values())}--")
+            # end of secondary validation
+            date = order_form.date.data
+            new_order_list = []
+            for i in range(order_form.recurring.data):
+                previous = find_num_breads(date,order_form.day_time.data)
+                if num_loafs > 15:
+                    if lang == "es":
+                        error3 = f"No se puede pedir mas de {MAX_BREADS} panes"
+                    elif lang == "en":
+                        error3 = f"You may not order more than {MAX_BREADS} breads"
+                elif previous == None:
+                    new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
+                    delivered=False, time_day=order_form.day_time.data, client=current_user.username, num_breads = num_loafs)
+                    db.session.add(new_order)
+                    db.session.commit()
+                elif previous + num_loafs > 15:
+                    if lang == "es":
+                        error3 = f"No se puede pedir mas de {MAX_BREADS-previous} panes este dia"
+                    elif lang == "en":
+                        error3 = f"You may not order more than {MAX_BREADS-previous} bread this day"
+                else:
+                    new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
+                    delivered=False, time_day=order_form.day_time.data, client=current_user.username, num_breads = num_loafs)
+                    db.session.add(new_order)
+                    db.session.commit()
+                date = date + timedelta(weeks=1)
+                order_logger.info("order received")
+            if lang == "es":
+                return redirect(url_for("pedidos"))
+            elif lang == "en":
+                return redirect(url_for("orders"))
+    if lang == "es":
+        return render_template("indexEs.html", bread_types=data.bread_types,
+                           order_form=order_form, error1=error1, error2=error2, error3=error3)
+    elif lang == "en":
+        return render_template("indexEng.html", bread_types=data.bread_types,
+                           order_form=order_form, error1=error1, error2=error2, error3 = error3)       
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -92,52 +171,14 @@ def home():
 
 @app.route('/Eng', methods=['POST', 'GET'])
 def indexEng():
-    order_form = BreadOrderForm()
-    order_form.validate_on_submit()
-    error1 = None
-    error2 = None
-    if order_form.validate_on_submit():
-        error1 = valid_day(order_form.date.data, "en")
-        error2 = valid_period(order_form.date.data, order_form.day_time.data, "en")
-        order_logger.info(f"{order_form.day_time.data}")
-        verifier = ReVerify(order_logger)
-
-        order = {}
-        # start of secondary vailidation
-        valid_order = True
-        if (error1 and error2):
-            valid_order = False
-        order_logger.info(f"{order_form.White_loaf.data}")
-        for bread in data.prices.keys():
-            if verifier.verify_int(eval(f'order_form.{bread}.data'), 0, 6):
-                order[bread] = eval(f'order_form.{bread}.data')
-        order_logger.info(f"{error2}")
-        if not verifier.verify_int(order_form.recurring.data, 0, 7):
-            valid_order = False
-        if sum(order.values()) == 0:
-            valid_order = False
-        if valid_order:
-            # end of secondary validation
-            date = order_form.date.data
-            for i in range(order_form.recurring.data):
-                new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
-                                  delivered=False, time_day=order_form.day_time.data, client=current_user.username)
-                db.session.add(new_order)
-                db.session.commit()
-                date = date + timedelta(weeks=1)
-                order_logger.info("order received")
-            return redirect(url_for("orders"))
-
-    return render_template("indexEng.html", bread_types=data.bread_types,
-                           order_form=order_form, error1=error1, error2=error2)
+    return index("en")
 
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     form = RegisterForm()
     form.validate_on_submit()
-    error1 = None
-    error2 = None
+    error1, error2 = None, None
     if form.validate_on_submit():
         valid = True
         if User.query.filter_by(username=form.username.data).first():
@@ -152,9 +193,7 @@ def register():
                     form.password.data) and verifier.verify_string(form.group.data) and verifier.verify_string(
                 form.email.data):
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
-                                                                                             method="pbkdf2:sha256",
-                                                                                             salt_length=14),
-                                group=form.group.data, email=form.email.data)
+                    method="pbkdf2:sha256",salt_length=14),group=form.group.data, email=form.email.data)
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)
@@ -171,8 +210,7 @@ def login():
         if verifier.verify_string(form.password.data) and verifier.verify_string(form.username.data):
             user_db = User.query.filter_by(username=form.username.data).first()
             if user_db:  # check if user in database
-                if werkzeug.security.check_password_hash(user_db.password,
-                                                         form.password.data):  # check if correct password
+                if werkzeug.security.check_password_hash(user_db.password,form.password.data):  # check if correct password
                     login_user(user_db)
                     loggin_logger.info(f"user {form.username.data} logged in correctly")
                     return redirect(url_for("indexEng"))
@@ -203,8 +241,7 @@ def orders():
                 db.session.delete(undelivered_orders.order_instance)
         db.session.commit()
         return redirect(url_for("orders"))
-    return render_template("orders.html", form=form, delivered_orders=delivered_orders,
-                           undelivered_orders=undelivered_orders)
+    return render_template("orders.html", form=form, delivered_orders=delivered_orders,undelivered_orders=undelivered_orders)
 
 
 @app.route('/account', methods=['POST', 'GET'])
@@ -256,44 +293,7 @@ def baker():
 # Spanish version
 @app.route('/Es', methods=['POST', 'GET'])
 def indexEs():
-    order_form = PedidoPan()
-    order_form.validate_on_submit()
-    error1 = None
-    error2 = None
-    if order_form.validate_on_submit():
-        error1 = valid_day(order_form.date.data, "es")
-        error2 = valid_period(order_form.date.data, order_form.day_time.data, "es")
-        order_logger.info(f"{order_form.day_time.data}")
-        verifier = ReVerify(order_logger)
-
-        order = {}
-        # start of secondary vailidation
-        valid_order = True
-        if (error1 and error2):
-            valid_order = False
-        order_logger.info(f"{order_form.White_loaf.data}")
-        for bread in data.prices.keys():
-            if verifier.verify_int(eval(f'order_form.{bread}.data'), 0, 6):
-                order[bread] = eval(f'order_form.{bread}.data')
-        order_logger.info(f"{error2}")
-        if not verifier.verify_int(order_form.recurring.data, 0, 7):
-            valid_order = False
-        if sum(order.values()) == 0:
-            valid_order = False
-        if valid_order:
-            # end of secondary validation
-            date = order_form.date.data
-            for i in range(order_form.recurring.data):
-                new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
-                                  delivered=False, time_day=order_form.day_time.data, client=current_user.username)
-                db.session.add(new_order)
-                db.session.commit()
-                date = date + timedelta(weeks=1)
-                order_logger.info("order received")
-            return redirect(url_for("pedidos"))
-
-    return render_template("indexEs.html", bread_types=data.bread_types,
-                           order_form=order_form, error1=error1, error2=error2)
+    return index("es")
 
 
 @app.route('/registro', methods=['POST', 'GET'])

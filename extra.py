@@ -50,12 +50,12 @@ class ReVerify(object):
 
 
 class OrderViewer(object):
-
     bread_types = data.bread_types
 
     def __init__(self, order, lang):
         if lang == "en":
             self.en = True
+            self.es = False
             self.message = "Your Order"
 
         elif lang == "es":
@@ -66,23 +66,14 @@ class OrderViewer(object):
         self.order = order
         self.is_form = False
 
-
     def __iter__(self):
         self.a = 0
         return self
 
     def __next__(self):
         if self.a < min([10, len(self.order)]):
-            values = ["first",
-                      "second",
-                      "third",
-                      "fourth",
-                      "fifth",
-                      "sixth",
-                      "seventh",
-                      "eighth",
-                      "ninenth",
-                      "tenth"]
+            values = ["first","second","third","fourth","fifth","sixth",
+                      "seventh","eighth","ninenth","tenth"]
             b = 1
             self.price = 0
             self.current_order = json.loads(self.order[self.a].order)
