@@ -11,6 +11,7 @@
     <thead>
     <tr>
       <th>Date</th>
+      <th>Time of day</th>
       <th>Order</th>
       <th>Price</th>
       <th>User</th>
@@ -20,12 +21,10 @@
       {% for i in today_orders%}
       <tr>
         <td>{{ today_orders.date }}</td>
+        <td>{{ today_orders.time_day }}</td>
         <td>{{ today_orders.message }}</td>
         <td>{{ today_orders.price }}€</td>
-        <td>{{ undelivered_orders.time_day }}</td>
         <td>{{ today_orders.customer }}</td>
-        <td>{{ today_orders.order_instance.group }}</td>
-
       </tr>
       {% endfor %}
     </tbody>
@@ -45,22 +44,20 @@
     <thead>
     <tr>
       <th>Date</th>
+      <th>Time of day</th>
       <th>Order</th>
       <th>Price</th>
-      <th>Time of day</th>
       <th>User</th>
-      <th>Group</th>
     </tr>
     </thead>
     <tbody>
       {% for i in undelivered_orders%}
       <tr>
         <td>{{ undelivered_orders.date }}</td>
+        <td>{{ undelivered_orders.time_day }}</td>
         <td>{{ undelivered_orders.message }}</td>
         <td>{{ undelivered_orders.price }}€</td>
-        <td>{{ today_orders.time_day }}</td>
         <td>{{ undelivered_orders.customer }}</td>
-        <td>{{ today_orders.order_instance.group }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -80,6 +77,7 @@
     <thead>
     <tr>
       <th>Date</th>
+      <th>Time of Day</th>
       <th>Order</th>
       <th>Price</th>
       <th>User</th>
@@ -89,6 +87,7 @@
       {% for i in delivered_orders%}
       <tr>
         <td>{{ delivered_orders.date }}</td>
+        <td>{{ delivered_orders.time_day }}</td>
         <td>{{ delivered_orders.message }}</td>
         <td>{{ delivered_orders.price }}€</td>
         <td>{{ delivered_orders.customer }}</td>
