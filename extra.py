@@ -57,7 +57,6 @@ class OrderViewer(object):
             self.en = True
             self.es = False
             self.message = "Your Order"
-
         elif lang == "es":
             self.en = False
             self.es = True
@@ -141,6 +140,6 @@ def valid_period(date, period, lang):
             return "No hay pan por la mañana este dia"
     if date == 4 and period == "Evening":
         if lang == "en":
-            return "No bread Friday evenbing"
+            return "No bread Friday evening"
         elif lang == "es":
             return "No hay pan Viernes por la tarde"

@@ -1,1 +1,3 @@
 TO DO
+    add option to delete users by id
+    make sure unlogged user does not crash when ordering Done

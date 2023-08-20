@@ -48,9 +48,12 @@
       <th>Order</th>
       <th>Price</th>
       <th>User</th>
+      <th>Delete</th>
     </tr>
     </thead>
     <tbody>
+      <form method="POST" action="{{ url_for('orders') }}">
+        {{ form.csrf_token }}
       {% for i in undelivered_orders%}
       <tr>
         <td>{{ undelivered_orders.date }}</td>
@@ -58,8 +61,18 @@
         <td>{{ undelivered_orders.message }}</td>
         <td>{{ undelivered_orders.price }}€</td>
         <td>{{ undelivered_orders.customer }}</td>
+        <td>{{ undelivered_orders.form_data }}</td>
       </tr>
       {% endfor %}
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><input type="submit" value="Delete" class="btn btn-dark"></td>
+      </tr>
+    </form>
     </tbody>
   </table>
 </div>
@@ -99,5 +112,4 @@
 </div>
 </div>
 </div>
-</body>
-</html>
+{% include "footer.html" %}

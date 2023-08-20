@@ -41,6 +41,14 @@ class DeleteForm(FlaskForm):
     eighth = BooleanField()
     ninenth = BooleanField()
     tenth = BooleanField()
+    eleventh = BooleanField()
+    thirteenth = BooleanField()
+    fouteenth = BooleanField()
+    fifteenth = BooleanField()
+    sixteenth = BooleanField()
+    seventeenth = BooleanField()
+    eighteenth = BooleanField()
+    nineteeth = BooleanField()
     submit = SubmitField("Register")
 
 

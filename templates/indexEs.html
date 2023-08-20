@@ -177,24 +177,28 @@
   </table>
 </div>
   </div>
-  <div><h4>Maximo numer de hogazas por hornada es de 15, por lo que su pedido no puede haber sido realizado</h4></div>
-  <div class="container-fluid position-absoulte">
+  <div class="mx-auto"><h4>Maximo numer de hogazas por hornada es de 15, por lo que su pedido no puede haber sido realizado</h4></div>
+  <div class="mx-auto" style="width:100%;height: 10px;"></div>
+  {% if not current_user.is_authenticated: %}<div class="mx-auto"><h4>Debe usar su cuenta para realizar un pedido</h4></div>{% endif %}
+  {% if current_user.is_authenticated: %}
+    <div class="container-fluid position-absoulte">
     <div class="container align-self-center" style="margin-top:100px">
       <div class="row">
-        <div class="column">  </div>
+        <div class="column"></div>
         <div class="col-lg-8 col-md-10 mx-auto" style="bottom:0">
           <ul class="list-group list-group-flush">
-           <li class="list-group-item align-self-center"><span style="color:red">{% if error3 %}{{error3}}{% endif %}</span></li>
+            <li class="list-group-item align-self-center"><span style="color:red">{% if error3 %}{{error3}}{% endif %}</span></li>
            <li class="list-group-item align-self-center">{{order_form.date}}<span style="color:red">{% if error1 %}{{error1}}{% endif %}</span></li>
            <li class="list-group-item align-self-center">{{order_form.day_time(style="width:120px")}}<span style="color:red">{% if error2 %}{{error2}}{% endif %}</span></li>
            <li class="list-group-item align-self-center">{{order_form.recurring(style="width:120px")}}</li>
-           <li class="list-group-item align-self-center"><input type="submit" value="Realizar Pedido" class="btn btn-dark"></li>
-          </ul>
-        <div class="column">  </div>
+           <li class="list-group-item align-self-center"><input type="submit" value="order" class="btn btn-dark"></li>
+         </ul>
+            <div class="column">  </div>
         </div>
       </div>
     </div>
     </div>
+    {% endif %}
     </form>
 </div>
 </div>

@@ -57,6 +57,8 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), nullable=False, unique=True)
     group = db.Column(db.String(255), nullable=False)
     orders = relationship("Order", back_populates="customer")
+    date = db.Column(db.String(255), nullable=False)
+
 
 
 class Order(db.Model):
@@ -184,7 +186,7 @@ def register():
         if User.query.filter_by(username=form.username.data).first():
             error1 = 'username taken'
             valid = False
-        if User.query.filter_by(username=form.email.data).first():
+        if User.query.filter_by(email=form.email.data).first():
             error2 = "email taken"
             valid = False
         if valid:
@@ -193,7 +195,7 @@ def register():
                     form.password.data) and verifier.verify_string(form.group.data) and verifier.verify_string(
                 form.email.data):
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
-                    method="pbkdf2:sha256",salt_length=14),group=form.group.data, email=form.email.data)
+                    method="pbkdf2:sha256",salt_length=14),group=form.group.data, email=form.email.data, date=str(datetime.date.today()))
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)
@@ -285,10 +287,23 @@ def baker():
         Order.date < (datetime.date.today())).all(), "en")
     today_orders = OrderViewer(db.session.query(Order).filter(
         Order.date == (datetime.date.today())).all(), "en")
-
-    return render_template("admin.html", undelivered_orders=undelivered_orders, delivered_orders=delivered_orders,
+    form = DeleteForm()
+    undelivered_orders.add_form(form)
+    form.validate_on_submit()
+    if form.validate_on_submit():
+        for i in undelivered_orders:
+            if undelivered_orders.form_data.data:
+                db.session.delete(undelivered_orders.order_instance)
+        db.session.commit()
+        return redirect(url_for("baker"))
+    return render_template("admin.html", form=form, undelivered_orders=undelivered_orders, delivered_orders=delivered_orders,
                            today_orders=today_orders)
 
+@app.route('/baker_users')
+@admin_required
+def baker_users():
+    users = db.session.query(User).all()
+    return render_template("admin_users.html", users = users)
 
 # Spanish version
 @app.route('/Es', methods=['POST', 'GET'])
@@ -398,4 +413,6 @@ def usuario():
 
 # Run Stuff
 if __name__ == "__main__":
+    app.debug = True
     app.run(host='0.0.0.0', port=5000)
+    

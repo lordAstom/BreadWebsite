@@ -177,7 +177,10 @@
   </table>
 </div>
   </div>
-  <div><h4>Maximum number of loafs per baking session is 15, your order will not be proccesed if it has gone this limit</h4></div>
+  <div class="mx-auto"><h4>Maximum number of loafs per baking session is 15, your order will not be proccesed if it has gone this limit</h4></div>
+  <div class="mx-auto" style="width:100%;height: 10px;"></div>
+  {% if not current_user.is_authenticated: %}<div class="mx-auto"><h4>Must use your account to log in</h4></div>{% endif %}
+  {% if current_user.is_authenticated: %}
     <div class="container-fluid position-absoulte">
     <div class="container align-self-center" style="margin-top:100px">
       <div class="row">
@@ -195,6 +198,7 @@
       </div>
     </div>
     </div>
+    {% endif %}
     </form>
 </div>
 </div>
