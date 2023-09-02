@@ -49,8 +49,12 @@ class DeleteForm(FlaskForm):
     seventeenth = BooleanField()
     eighteenth = BooleanField()
     nineteeth = BooleanField()
-    submit = SubmitField("Register")
+    submit = SubmitField("Delete")
 
+class DeleteUserForm(FlaskForm):
+    users_to_delete = StringField(validators=[DataRequired(message="required field"),
+                                       NoneOf(data.invalid_characters, message="invalid symbol used")])
+    submit = SubmitField("Delete")
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[DataRequired(message="required field"),

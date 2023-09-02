@@ -77,13 +77,14 @@ class Order(db.Model):
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if current_user.id != 1:
-            return redirect(url_for('indexEng', next=request.url))
-        else:
-            return f(*args, **kwargs)
-
+        try:
+            if current_user.id != 1:
+                return redirect(url_for('indexEng', next=request.url))
+            else:
+                return f(*args, **kwargs)
+        except AttributeError:
+            return "Item not found", 400
     return decorated_function
-
 
 loggin_logger = Log("login ssuccseful", "login_info.log")
 order_logger = Log("order ssuccseful", "order_info.log")
@@ -299,11 +300,19 @@ def baker():
     return render_template("admin.html", form=form, undelivered_orders=undelivered_orders, delivered_orders=delivered_orders,
                            today_orders=today_orders)
 
-@app.route('/baker_users')
+@app.route('/baker_users', methods=['POST', 'GET'])
 @admin_required
 def baker_users():
     users = db.session.query(User).all()
-    return render_template("admin_users.html", users = users)
+    form = DeleteUserForm()
+    form.validate_on_submit()  
+    if form.validate_on_submit():
+        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(form.users_to_delete.data)+");"
+        loggin_logger.info(stmt) 
+        db.session.execute(stmt)
+        db.session.commit()
+        return redirect(url_for("baker_users"))   
+    return render_template("admin_users.html", users = users,form = form)
 
 # Spanish version
 @app.route('/Es', methods=['POST', 'GET'])
