@@ -14,12 +14,14 @@
                 <li class="list-group-item ">Old Password {{form.old_password(style="width:300px")}}</li>
                 <li class="list-group-item">New Password {{form.new_password(style="width:300px")}}</li>
                 <li class="list-group-item "><input type="submit" value="Save Changes" class="btn btn-dark"></li>
+                <li class="list-group-item "></li><button><a class="nav-link text-white" href="{{ url_for('eliminar') }}">Delete Account</a>
               </ul>
             </div>
           </div>
         </div>
       </div>
     </form>
+    </button>
   </div>
 </div>
 {% include "footer.html" %}

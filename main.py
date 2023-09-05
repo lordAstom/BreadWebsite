@@ -207,6 +207,7 @@ def register():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    error_no_user = None
     form = LoginForm()
     verifier = ReVerify(loggin_logger)
     if form.validate_on_submit():
@@ -217,7 +218,9 @@ def login():
                     login_user(user_db)
                     loggin_logger.info(f"user {form.username.data} logged in correctly")
                     return redirect(url_for("indexEng"))
-    return render_template("login.html", form=form)
+            else: 
+                error_no_user = "No such user exists"
+    return render_template("login.html", form=form, error_no_user = error_no_user)
 
 
 @app.route('/logout')
@@ -226,6 +229,35 @@ def logout():
     logout_user()
     return redirect(url_for('indexEng'))
 
+@app.route('/desconectar')
+@login_required
+def desconectar():
+    logout_user()
+    return redirect(url_for('indexEs'))
+
+@app.route('/delete')
+@login_required
+def delete():
+    user_id = current_user.id
+    logout_user()
+    stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+    db.session.execute(stmt)
+    stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+    db.session.execute(stmt)
+    db.session.commit()
+    return redirect(url_for('indexEng'))
+
+@app.route('/eliminar')
+@login_required
+def eliminar():
+    user_id = current_user.id
+    logout_user()
+    stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+    db.session.execute(stmt)
+    stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+    db.session.execute(stmt)
+    db.session.commit()
+    return redirect(url_for('indexEs'))
 
 @app.route('/orders', methods=['POST', 'GET'])
 @login_required
@@ -307,8 +339,9 @@ def baker_users():
     form = DeleteUserForm()
     form.validate_on_submit()  
     if form.validate_on_submit():
-        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(form.users_to_delete.data)+");"
-        loggin_logger.info(stmt) 
+        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(form.users_to_delete.data)+");" 
+        db.session.execute(stmt)
+        stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(form.users_to_delete.data)+");"
         db.session.execute(stmt)
         db.session.commit()
         return redirect(url_for("baker_users"))   
@@ -355,6 +388,7 @@ def registro():
 def acceso():
     form = LoginForm()
     verifier = ReVerify(loggin_logger)
+    error_no_user = None
     if form.validate_on_submit():
         if verifier.verify_string(form.password.data) and verifier.verify_string(form.username.data):
             user_db = User.query.filter_by(username=form.username.data).first()
@@ -364,7 +398,9 @@ def acceso():
                     login_user(user_db)
                     loggin_logger.info(f"user {form.username.data} logged in correctly")
                     return redirect(url_for("indexEs"))
-    return render_template("loginES.html", form=form)
+            else: 
+                error_no_user = "No existe ese usuario"
+    return render_template("loginES.html", form=form, error_no_user= error_no_user)
 
 
 @app.route('/pedidos', methods=['POST', 'GET'])
@@ -393,10 +429,21 @@ def pedidos():
 def usuario():
     form = ModifyUser()
     form.validate_on_submit()
+    delete_form = DeleteForm()
+    delete_form.validate_on_submit()
     error1 = None
     error2 = None
     user_data = {"user": current_user.username, "email": current_user.email, "group": current_user.group}
-    if form.validate_on_submit():
+    if delete_form.validate_on_submit():
+        user_id = current_user.id
+        logout_user()
+        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+        db.session.execute(stmt)
+        stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+        db.session.execute(stmt)
+        db.session.commit()
+        return redirect(url_for("indexEs"))
+    elif form.validate_on_submit():
         valid = True
         user = User.query.filter_by(username=current_user.username).first()
         if User.query.filter_by(username=form.username.data).first():
@@ -408,7 +455,6 @@ def usuario():
                 error2 = "Correo ya escogido"
                 valid = False
         if valid:
-            loggin_logger.info("works")
             if werkzeug.security.check_password_hash(current_user.password, form.old_password.data):
                 user.username = form.username.data
                 user.email = form.email.data

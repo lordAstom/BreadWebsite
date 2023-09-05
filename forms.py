@@ -56,6 +56,9 @@ class DeleteUserForm(FlaskForm):
                                        NoneOf(data.invalid_characters, message="invalid symbol used")])
     submit = SubmitField("Delete")
 
+class DeleteAccountForm(FlaskForm):
+    submit = SubmitField("Delete")
+
 class LoginForm(FlaskForm):
     username = StringField(validators=[DataRequired(message="required field"),
                                        NoneOf(data.invalid_characters, message="invalid symbol used")])

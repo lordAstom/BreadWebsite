@@ -38,7 +38,7 @@
       {% endif %}
       {% if current_user.is_authenticated: %}
       <li class="nav-item text-white bg-dark">
-        <a class="nav-link text-white" href="{{ url_for('logout') }}"><img src="static/icons/power-switch.png" alt="account" class="bg-dark" style="height:30px"></a>
+        <a class="nav-link text-white" href="{{ url_for('desconectar') }}"><img src="static/icons/power-switch.png" alt="account" class="bg-dark" style="height:30px"></a>
       </li>
       {% endif %}
       {% if current_user.is_authenticated: %}

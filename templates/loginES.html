@@ -5,6 +5,7 @@
     <div class="row">
       <div class="col-lg-8 col-md-10 mx-auto" style="bottom:0">
          {{ wtf.quick_form(form, novalidate=True, button_map={"submit": "dark"}) }}
+         <span style="color:red">{% if error_no_user %}{{error_no_user}}{% endif %}</span>
       </div>
     </div>
   </div>
