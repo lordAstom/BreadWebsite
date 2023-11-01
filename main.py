@@ -56,6 +56,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     group = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.String(255), nullable=False)
     orders = relationship("Order", back_populates="customer")
     date = db.Column(db.String(255), nullable=False)
 
@@ -196,7 +197,7 @@ def register():
                     form.password.data) and verifier.verify_string(form.group.data) and verifier.verify_string(
                 form.email.data):
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
-                    method="pbkdf2:sha256",salt_length=14),group=form.group.data, email=form.email.data, date=str(datetime.date.today()))
+                    method="pbkdf2:sha256",salt_length=14),group=form.group.data, address = form.address.data, email=form.email.data, date=str(datetime.date.today()))
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)
@@ -375,7 +376,7 @@ def registro():
                 new_user = User(username=form.username.data, password=generate_password_hash(str(form.password.data),
                                                                                              method="pbkdf2:sha256",
                                                                                              salt_length=14),
-                                group=form.group.data, email=form.email.data)
+                                group=form.group.data, address = form.address.data, email=form.email.data)
                 db.session.add(new_user)
                 db.session.commit()
                 login_user(new_user)

@@ -12,6 +12,7 @@
                 <li class="list-group-item ">Usuario {{form.username(style="width:300px")}} <span style="color:red">{% if error1 %}{{error1}}{% endif %}</span></li>
                 <li class="list-group-item ">Grupo {{form.group(style="width:300px")}}</li>
                 <li class="list-group-item ">Correo Electronico {{form.email(style="width:300px")}}<span style="color:red">{% if error2 %}{{error2}}{% endif %}</span></li>
+                <li class="list-group-item ">Direccion {{form.address(style="width:300px")}}</li>
                 <li class="list-group-item">Contraseña {{form.password(style="width:300px")}}</li>
                 <li class="list-group-item "><input type="submit" value="Register" class="btn btn-dark"></li>
               </ul>

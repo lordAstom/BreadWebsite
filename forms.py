@@ -28,6 +28,8 @@ class RegisterForm(FlaskForm):
                                     NoneOf(data.invalid_characters, message="invalid symbol used")])
     password = PasswordField(validators=[DataRequired(), NoneOf(data.invalid_characters, message="invalid symbol used"),
                                          Length(min = 8, max= 50, message= "password must be 8 to 50 characters long")])
+    address = StringField(validators=[DataRequired(message="required field"),
+                                    NoneOf(data.invalid_characters, message="invalid symbol used")])
     submit = SubmitField("Register")
 
 class DeleteForm(FlaskForm):
