@@ -139,23 +139,25 @@ def index(lang):
                     new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
                     delivered=False, time_day=order_form.day_time.data, client=current_user.username, num_breads = num_loafs)
                     db.session.add(new_order)
-                    db.session.commit()
+
                 elif previous + num_loafs > 15:
                     if lang == "es":
-                        error3 = f"No se puede pedir mas de {MAX_BREADS-previous} panes este dia"
+                        error3 = f"No se puede pedir mas de {MAX_BREADS-previous} panes el {date}"
                     elif lang == "en":
-                        error3 = f"You may not order more than {MAX_BREADS-previous} bread this day"
+                        error3 = f"You may not order more than {MAX_BREADS-previous} bread on {date}"
                 else:
                     new_order = Order(user_id=current_user.id, order=json.dumps(order), date=date, completed=False,
                     delivered=False, time_day=order_form.day_time.data, client=current_user.username, num_breads = num_loafs)
                     db.session.add(new_order)
-                    db.session.commit()
+ 
                 date = date + timedelta(weeks=1)
                 order_logger.info("order received")
-            if lang == "es":
-                return redirect(url_for("pedidos"))
-            elif lang == "en":
-                return redirect(url_for("orders"))
+            db.session.commit()
+            if not error3:
+                if lang == "es":
+                    return redirect(url_for("pedidos"))
+                elif lang == "en":
+                    return redirect(url_for("orders"))
     if lang == "es":
         return render_template("indexEs.html", bread_types=data.bread_types,
                            order_form=order_form, error1=error1, error2=error2, error3=error3)

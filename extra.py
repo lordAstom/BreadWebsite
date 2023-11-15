@@ -1,4 +1,5 @@
 import logging
+import datetime
 from config import Data
 import json
 data = Data()
@@ -79,6 +80,8 @@ class OrderViewer(object):
             self.date = self.order[self.a].date
             self.order_instance = self.order[self.a]
             self.time_day = self.order[self.a].time_day
+            d = self.date.split("-")
+            self.date = datetime.date(int(d[0]),int(d[1]),int(d[2])).strftime('%d/%m/%y')
             if self.es:
                 if self.time_day == "Morning":
                     self.time_day = "Mañana"
