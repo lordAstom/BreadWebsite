@@ -94,8 +94,8 @@ class BreadOrderForm(FlaskForm):
     Wholemeal_White_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Wholemeal_Seeds_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Wholemeal_Walnut_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
-    Wholemeal_Walnut_and_Sultanas_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")],
-                                               default=0)
+    Wholemeal_Walnut_and_Sultanas_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
+    Wholemeal_Pistacho_loaf = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     White_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Seeds_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Walnut_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
@@ -109,8 +109,8 @@ class BreadOrderForm(FlaskForm):
     Wholemeal_White_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Wholemeal_Seeds_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     Wholemeal_Walnut_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
-    Wholemeal_Walnut_and_Sultanas_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")],
-                                               default=0)
+    Wholemeal_Walnut_and_Sultanas_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
+    Wholemeal_Pistacho_stick = IntegerField(validators=[NumberRange(min=0, max=6, message="Invalid Number")], default=0)
     date = DateField(default=date.today() + timedelta(days=1), validators=[DataRequired(message="required field"),
                                                                            FutureDaysOnly()])
     recurring = IntegerField(validators=[NumberRange(min=1, max=10, message="Invalid Number")],

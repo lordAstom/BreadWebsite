@@ -5,7 +5,7 @@ load_dotenv()
 class Data(object):
     bread_types = ["White", "Seeds", "Walnut", "Walnut and Sultanas", "Onion", "Potato", "Olive", "Pistacho", "Wholemeal Rye",
                    "Wholemeal Spelt", "Wholemeal White", "Wholemeal Seeds", "Wholemeal Walnut",
-                   "Wholemeal Nuts and Sultanas"]
+                   "Wholemeal Nuts and Sultanas", "Wholemeal Pistachos"]
     invalid_characters = ["<", ">", "'", '"', "#", "%", "_", ";", "~"]
     tipos_pan = {"White_loaf": "Hogaza de Pan Blanco",
               "Seeds_loaf": "Hogaza de Pan de Semillas",
@@ -21,6 +21,7 @@ class Data(object):
               "Wholemeal_Seeds_loaf": "Hogaza de Pan Integral de Semillas",
               "Wholemeal_Walnut_loaf": "Hogaza de Pan Integrales de Nueces",
               "Wholemeal_Walnut_and_Sultanas_loaf": "Hogaza de Pan Integral de Nueces y Pasas",
+                
               "White_stick": "Barra de Pan Blanco",
               "Seeds_stick": "Barra de Pan de Semillas",
               "Walnut_stick": "Barra de Pan de Nueces",
@@ -67,3 +68,5 @@ class SecretData(object):
     secret_key = os.getenv('SECRET_KEY_FlASK')
 
 
+if __name__ == "__main__":
+    data = SecretData(º )

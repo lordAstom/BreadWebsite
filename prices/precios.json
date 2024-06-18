@@ -1,0 +1,152 @@
+{
+    "Olive_stick": {
+        "Beneficios": 1.515,
+        "Coste": 0.9850000000000001,
+        "Precio": 2.5
+    },
+    "Olive_loaf": {
+        "Beneficios": 2.665,
+        "Coste": 1.3350000000000002,
+        "Precio": 4
+    },
+    "White_stick": {
+        "Beneficios": 1.565,
+        "Coste": 0.435,
+        "Precio": 2
+    },
+    "White_loaf": {
+        "Beneficios": 2.24,
+        "Coste": 0.76,
+        "Precio": 3
+    },
+    "Onion_stick": {
+        "Beneficios": 1.79625,
+        "Coste": 0.7037500000000001,
+        "Precio": 2.5
+    },
+    "Onion_loaf": {
+        "Beneficios": 2.6899999999999995,
+        "Coste": 1.3100000000000003,
+        "Precio": 4
+    },
+    "Wholemeal_Rye_stick": {
+        "Beneficios": 1.9962499999999999,
+        "Coste": 0.50375,
+        "Precio": 2.5
+    },
+    "Wholemeal_Rye_loaf": {
+        "Beneficios": 3.09,
+        "Coste": 0.9100000000000001,
+        "Precio": 4
+    },
+    "Wholemeal_Spelt_stick": {
+        "Beneficios": 1.89625,
+        "Coste": 0.60375,
+        "Precio": 2.5
+    },
+    "Wholemeal_Spelt_loaf": {
+        "Beneficios": 2.8899999999999997,
+        "Coste": 1.11,
+        "Precio": 4
+    },
+    "Wholemeal_White_stick": {
+        "Beneficios": 2.01225,
+        "Coste": 0.48775,
+        "Precio": 2.5
+    },
+    "Wholemeal_White_loaf": {
+        "Beneficios": 3.122,
+        "Coste": 0.8780000000000001,
+        "Precio": 4
+    },
+    "Wholemeal_Seeds_stick": {
+        "Beneficios": 1.91425,
+        "Coste": 0.58575,
+        "Precio": 2.5
+    },
+    "Wholemeal_Seeds_loaf": {
+        "Beneficios": 2.742,
+        "Coste": 1.2580000000000002,
+        "Precio": 4
+    },
+    "Walnut_stick": {
+        "Beneficios": 1.4462499999999998,
+        "Coste": 1.0537500000000002,
+        "Precio": 2.5
+    },
+    "Walnut_loaf": {
+        "Beneficios": 2.0024999999999995,
+        "Coste": 1.9975000000000003,
+        "Precio": 4
+    },
+    "Wholemeal_Walnut_stick": {
+        "Beneficios": 1.42925,
+        "Coste": 1.07075,
+        "Precio": 2.5
+    },
+    "Wholemal_Walnut_loaf": {
+        "Beneficios": 1.956,
+        "Coste": 2.044,
+        "Precio": 4
+    },
+    "Walnut_and_Sultanas_stick": {
+        "Beneficios": 1.576,
+        "Coste": 0.9239999999999999,
+        "Precio": 2.5
+    },
+    "Walnut_and_Sultanas_loaf": {
+        "Beneficios": 2.262,
+        "Coste": 1.738,
+        "Precio": 4
+    },
+    "Wholemeal_and_Sultanas_stick": {
+        "Beneficios": 1.16425,
+        "Coste": 1.33575,
+        "Precio": 2.5
+    },
+    "Wholemeal_and_Sultanas_loaf": {
+        "Beneficios": 2.366,
+        "Coste": 1.634,
+        "Precio": 4
+    },
+    "Potato_stick": {
+        "Beneficios": 1.5462500000000001,
+        "Coste": 0.45375,
+        "Precio": 2
+    },
+    "Potato_loaf": {
+        "Beneficios": 2.19,
+        "Coste": 0.81,
+        "Precio": 3
+    },
+    "Pistacho_stick": {
+        "Beneficios": 1.3624999999999998,
+        "Coste": 1.6375000000000002,
+        "Precio": 3
+    },
+    "Pistacho_loaf": {
+        "Beneficios": 1.8725,
+        "Coste": 2.6275,
+        "Precio": 4.5
+    },
+    "Wholemeal_Pistachos_stick": {
+        "Beneficios": 1.6017499999999998,
+        "Coste": 1.3982500000000002,
+        "Precio": 3
+    },
+    "Wholemeal_Pistacho_loaf": {
+        "Beneficios": 2.4385,
+        "Coste": 2.5615,
+        "Precio": 5
+    },
+    "Seeds_stick": {
+        "Beneficios": 1.2474999999999998,
+        "Coste": 0.7525000000000002,
+        "Precio": 2
+    },
+    "Seeds_loaf": {
+        "Beneficios": 1.9849999999999999,
+        "Coste": 1.0150000000000001,
+        "Precio": 3
+    }
+}

@@ -22,7 +22,6 @@ class Log(object):
 
     def error(self, message):
         self.logger.error(message)
-loggin_logger = Log("login ssuccseful", "order_debug.log")
 
 class ReVerify(object):
     def __init__(self, logger):
@@ -38,6 +37,9 @@ class ReVerify(object):
         return True
 
     def verify_int(self, integer, minimum, maximum):
+        """
+        verifies if iteger is an integer and within minimum and maximum
+        """
         try:
             value = int(integer)
             if not (minimum <= value <= maximum):
@@ -71,6 +73,9 @@ class OrderViewer(object):
         return self
 
     def __next__(self):
+        """
+        iterator method to show the orders of bread in the sql request self.order
+        """
         if self.a < min([10, len(self.order)]):
             values = ["first","second","third","fourth","fifth","sixth",
                       "seventh","eighth","ninenth","tenth"]
@@ -89,7 +94,6 @@ class OrderViewer(object):
                     self.time_day = "Tarde"
             self.message = ""
             self.customer = self.order[self.a].client
-            loggin_logger.info(f"{self.current_order}")
             for bread in self.current_order.keys():
                 if self.current_order[bread] == 1:
                     if self.en:
@@ -124,6 +128,10 @@ class OrderViewer(object):
         self.form = form
 
 def valid_day(date, lang):
+    """
+    Checks if the date is valid to order bread 
+    Returns None if valid and a message in the correct language if not
+    """
     days = [2, 5, 6]
     data = date.weekday()
     if data in days:
@@ -135,6 +143,9 @@ def valid_day(date, lang):
         return
 
 def valid_period(date, period, lang):
+    """
+    Returns None if no issue and error string depending on period and date in the correct language
+    """
     date = date.weekday()
     if date in [0, 1, 3] and period == "Morning":
         if lang == "en":

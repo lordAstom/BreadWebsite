@@ -9,7 +9,7 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, cur
 from forms import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import relationship
-from sqlalchemy import ForeignKey, Column, Integer, String, and_
+from sqlalchemy import ForeignKey, Column, Integer, String, and_, text
 import json
 from extra import *
 from config import Data, SecretData
@@ -28,6 +28,9 @@ ckeditor = CKEditor(app)
 
 
 def create_app():
+    """
+    Creates framework for it website to run (blackbox)
+    """
     global app
     global db
     global login_manager
@@ -45,7 +48,10 @@ def create_app():
 create_app()
 
 def find_num_breads(date,time):
-        stmt = """SELECT SUM(num_breads) FROM "orders" WHERE time_day = '"""+time+"""' AND date = '"""+str(date)+"""'"""
+        """
+        
+        """
+        stmt = text("""SELECT SUM(num_breads) FROM "orders" WHERE time_day = '"""+time+"""' AND date = '"""+str(date)+"""'""")
         b = db.session.execute(stmt)
         return b.first()[0]
 
@@ -75,7 +81,11 @@ class Order(db.Model):
     client = db.Column(db.String(255), nullable=False)
     num_breads = db.Column(db.Integer)
 
+
 def admin_required(f):
+    """
+    Makes sure only admin (user.id == 1) can acces when decorating page function
+    """
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
@@ -88,30 +98,33 @@ def admin_required(f):
     return decorated_function
 
 loggin_logger = Log("login ssuccseful", "login_info.log")
-order_logger = Log("order ssuccseful", "order_info.log")
+order_logger = Log("order succseful", "order_info.log")
 
 def index(lang):
+    """
+    Presents the main webpage in either spaninsh or english and allows for ordering the right amount of bread if logged in
+    Checks that not more than 15 breads ordered in a day
+     """
     if lang == "es":
         order_form = PedidoPan()
     elif lang == "en":
         order_form = BreadOrderForm()        
     order_form.validate_on_submit()
     error1,error2,error3 = None, None, None
-    if order_form.validate_on_submit():
+    if order_form.validate_on_submit(): #
         error1 = valid_day(order_form.date.data, lang)
         error2 = valid_period(order_form.date.data, order_form.day_time.data, lang)
-        order_logger.info(f"{order_form.day_time.data}")
         verifier = ReVerify(order_logger)
         order = {}
         # start of secondary vailidation
         valid_order = True
         if (error1 and error2):
             valid_order = False
-        order_logger.info(f"{order_form.White_loaf.data}")
         for bread in data.prices.keys():
             if verifier.verify_int(eval(f'order_form.{bread}.data'), 0, 6):
                 order[bread] = eval(f'order_form.{bread}.data')
-        order_logger.info(f"{error2}")
+        if error2:
+            order_logger.info(f"{error2}")
         if not verifier.verify_int(order_form.recurring.data, 0, 7):
             valid_order = False
         num_loafs = sum(list(order.values())[:len(order.values())-1])+sum(list(order.values())[len(order.values())-1:])/2
@@ -182,6 +195,10 @@ def indexEng():
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
+    """
+    Backend of english registering a new user after checking the email and user do not exist already in database.
+    If no issues happen logs in new user, adds them to database and redirects to the mainpage
+    """
     form = RegisterForm()
     form.validate_on_submit()
     error1, error2 = None, None
@@ -210,6 +227,10 @@ def register():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    """
+    Backend of english registering a new user after checking the user and logs in.
+    If no issues happen logs in new user, adds them to database and redirects to the mainpage
+    """
     error_no_user = None
     form = LoginForm()
     verifier = ReVerify(loggin_logger)
@@ -241,11 +262,14 @@ def desconectar():
 @app.route('/delete')
 @login_required
 def delete():
+    """
+    Deletes the user from database when directed from user page in english
+    """
     user_id = current_user.id
     logout_user()
-    stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+    stmt = text('''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");")
     db.session.execute(stmt)
-    stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+    stmt = text('''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");")  
     db.session.execute(stmt)
     db.session.commit()
     return redirect(url_for('indexEng'))
@@ -253,11 +277,14 @@ def delete():
 @app.route('/eliminar')
 @login_required
 def eliminar():
+    """
+    Deletes the user from database when directed from user page in spanish
+    """
     user_id = current_user.id
     logout_user()
-    stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+    stmt = text('''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");")
     db.session.execute(stmt)
-    stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+    stmt = text('''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");")
     db.session.execute(stmt)
     db.session.commit()
     return redirect(url_for('indexEs'))
@@ -265,6 +292,9 @@ def eliminar():
 @app.route('/orders', methods=['POST', 'GET'])
 @login_required
 def orders():
+    """
+    Presents the user with their orders and allows them to delete them
+    """
     user_id = current_user.id
     undelivered_orders = OrderViewer(db.session.query(Order).filter(
         and_(Order.user_id == user_id, Order.date > (datetime.date.today() - datetime.timedelta(days=1)))).all(), "en")
@@ -285,6 +315,9 @@ def orders():
 @app.route('/account', methods=['POST', 'GET'])
 @login_required
 def account():
+    """
+    Presents user with a way to change the inforamationif the user has their password and username in english
+    """
     form = ModifyUser()
     form.validate_on_submit()
     error1 = None
@@ -302,7 +335,6 @@ def account():
                 error2 = "email taken"
                 valid = False
         if valid:
-            loggin_logger.info("works")
             if werkzeug.security.check_password_hash(current_user.password, form.old_password.data):
                 user.username = form.username.data
                 user.email = form.email.data
@@ -317,6 +349,9 @@ def account():
 @app.route('/baker')
 @admin_required
 def baker():
+    """
+    Admin page to see all orders and delete future ones
+    """
     undelivered_orders = OrderViewer(db.session.query(Order).filter(
         and_(Order.date > (datetime.date.today()))).all(), "en")
     delivered_orders = OrderViewer(db.session.query(Order).filter(
@@ -338,13 +373,16 @@ def baker():
 @app.route('/baker_users', methods=['POST', 'GET'])
 @admin_required
 def baker_users():
+    """
+    Admin page to control and allow the deleting of users by admin
+    """
     users = db.session.query(User).all()
     form = DeleteUserForm()
     form.validate_on_submit()  
     if form.validate_on_submit():
-        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(form.users_to_delete.data)+");" 
+        stmt = text('''DELETE FROM "users" WHERE id IN ('''+str(form.users_to_delete.data)+");")
         db.session.execute(stmt)
-        stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(form.users_to_delete.data)+");"
+        stmt = text('''DELETE FROM "orders" WHERE user_id IN ('''+str(form.users_to_delete.data)+");")
         db.session.execute(stmt)
         db.session.commit()
         return redirect(url_for("baker_users"))   
@@ -358,6 +396,10 @@ def indexEs():
 
 @app.route('/registro', methods=['POST', 'GET'])
 def registro():
+    """
+    Backend of spanish registering a new user after checking the email and user do not exist already in database.
+    If no issues happen logs in new user, adds them to database and redirects to the mainpage
+    """
     form = RegisterForm()
     form.validate_on_submit()
     error1 = None
@@ -389,6 +431,9 @@ def registro():
 
 @app.route('/acceso', methods=['POST', 'GET'])
 def acceso():
+    """
+    Page that allows user to log in to the account and get redirectod to main page in spanish
+    """
     form = LoginForm()
     verifier = ReVerify(loggin_logger)
     error_no_user = None
@@ -409,6 +454,9 @@ def acceso():
 @app.route('/pedidos', methods=['POST', 'GET'])
 @login_required
 def pedidos():
+    """
+    Page thath shows all orders the user has  done in spaninsh
+    """
     user_id = current_user.id
     undelivered_orders = OrderViewer(db.session.query(Order).filter(
         and_(Order.user_id == user_id, Order.date > (datetime.date.today() - datetime.timedelta(days=1)))).all(), "es")
@@ -430,6 +478,9 @@ def pedidos():
 @app.route('/usuario', methods=['POST', 'GET'])
 @login_required
 def usuario():
+    """
+    Presents user with a way to change the inforamationif the user has their password and username in spanish
+    """
     form = ModifyUser()
     form.validate_on_submit()
     delete_form = DeleteForm()
@@ -440,9 +491,9 @@ def usuario():
     if delete_form.validate_on_submit():
         user_id = current_user.id
         logout_user()
-        stmt = '''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");"
+        stmt = text('''DELETE FROM "users" WHERE id IN ('''+str(user_id)+");")
         db.session.execute(stmt)
-        stmt = '''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");"
+        stmt = text('''DELETE FROM "orders" WHERE user_id IN ('''+str(user_id)+");")
         db.session.execute(stmt)
         db.session.commit()
         return redirect(url_for("indexEs"))
