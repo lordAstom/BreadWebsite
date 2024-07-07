@@ -1,6 +1,5 @@
 import os
-from dotenv import load_dotenv
-load_dotenv()
+
 
 class Data(object):
     bread_types = ["White", "Seeds", "Walnut", "Walnut and Sultanas", "Pistacho",

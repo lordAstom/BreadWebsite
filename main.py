@@ -1,8 +1,7 @@
 import werkzeug.security
-from flask import Flask, render_template, redirect, url_for, flash, g, request
+from flask import Flask, render_template, redirect, url_for, request
 from functools import wraps
 from flask_bootstrap import Bootstrap
-from flask_ckeditor import CKEditor
 from datetime import date, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
@@ -21,7 +20,7 @@ secret_data = SecretData()
 
 app = Flask(__name__)
 
-ckeditor = CKEditor(app)
+
 
 # Flask-SQLAlchemy settings
 # Avoids SQLAlchemy warning
@@ -36,7 +35,7 @@ def create_app():
     global login_manager
     app = Flask(__name__)
     Bootstrap(app)
-    app.config['SECRET_KEY'] = secret_data.secret_key
+    app.config['SECRET_KEY'] = "gdfgsksdflsdfjksjfkdsjfksjkfjdls"
     login_manager = LoginManager()
     login_manager.init_app(app)
 
